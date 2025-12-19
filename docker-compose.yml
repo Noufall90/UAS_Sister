@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database untuk persistent dedup store dan processed events
+  postgres:
+    image: postgres:16-alpine
+    container_name: log_aggregator_postgres
+    environment:
+      POSTGRES_DB: log_aggregator
+      POSTGRES_USER: aggregator
+      POSTGRES_PASSWORD: aggregator_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aggregator -d log_aggregator"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - aggregator_network
+
+  # Redis broker untuk messaging internal
+  redis:
+    image: redis:7-alpine
+    container_name: log_aggregator_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aggregator_network
+
+  # Aggregator: API service yang menerima publish dan provide GET /events, /stats
+  aggregator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: log_aggregator_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://aggregator:aggregator_pass@postgres:5432/log_aggregator
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: INFO
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8080:8080"
+    volumes:
+      - aggregator_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - aggregator_network
+    restart: on-failure:5
+
+  # Publisher: Service yang generate event dan kirim ke aggregator (dengan duplikasi)
+  publisher:
+    build:
+      context: .
+      dockerfile: publisher.Dockerfile
+    container_name: log_aggregator_publisher
+    depends_on:
+      aggregator:
+        condition: service_healthy
+    environment:
+      AGGREGATOR_URL: http://aggregator:8080
+      PUBLISHER_WORKERS: "3"
+      EVENT_COUNT: "50000"
+      DUPLICATE_RATE: "0.35"
+    networks:
+      - aggregator_network
+    restart: on-failure
+
+volumes:
+  postgres_data:
+    name: log_aggregator_postgres_data
+  redis_data:
+    name: log_aggregator_redis_data
+  aggregator_data:
+    name: log_aggregator_data
+
+networks:
+  aggregator_network:
+    driver: bridge
+    name: aggregator_network

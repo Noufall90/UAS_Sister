@@ -1,0 +1,54 @@
+meta {
+  name: Get All Events
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8080/events
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "count": 3,
+    "events": [
+      {
+        "topic": "logs.api",
+        "event_id": "evt-001",
+        "timestamp": "2025-12-19T10:30:00Z",
+        "source": "api-gateway",
+        "payload": {
+          "endpoint": "/api/users",
+          "method": "GET",
+          "status_code": 200
+        },
+        "processed_at": "2025-12-19T10:30:00.125000Z"
+      },
+      {
+        "topic": "logs.database",
+        "event_id": "evt-002",
+        "timestamp": "2025-12-19T10:30:01Z",
+        "source": "database-service",
+        "payload": {
+          "query": "SELECT * FROM users",
+          "duration_ms": 125
+        },
+        "processed_at": "2025-12-19T10:30:01.250000Z"
+      },
+      {
+        "topic": "logs.cache",
+        "event_id": "evt-003",
+        "timestamp": "2025-12-19T10:30:02Z",
+        "source": "redis-cache",
+        "payload": {
+          "operation": "SET",
+          "key": "user:123",
+          "ttl": 3600
+        },
+        "processed_at": "2025-12-19T10:30:02.500000Z"
+      }
+    ]
+  }
+}

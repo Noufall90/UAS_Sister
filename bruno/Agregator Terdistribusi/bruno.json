@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Agregator Terdistribusi",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

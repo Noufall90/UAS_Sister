@@ -1,0 +1,26 @@
+meta {
+  name: Publish Single Event
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/publish
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "events": {
+        "topic": "logs.application",
+        "event_id": "evt-12345",
+        "timestamp": "2025-12-19T10:30:00Z",
+        "source": "service-a",
+        "payload": {
+          "level": "INFO",
+          "message": "Application started successfully"
+        }
+      }
+    }
+}
