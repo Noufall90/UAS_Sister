@@ -8,9 +8,9 @@ Sistem log aggregator multi-service dengan Pub-Sub pattern yang mendukung idempo
 ┌─────────────────────────────────────────────────────────┐
 │              Docker Compose Network                     │
 │  ┌──────────────┐    ┌──────────────┐                   │
-│  │  Publisher   │───▶│ Aggregator   │                   │
+│  │  Publisher   │──▶│ Aggregator   │                   │
 │  │  (Worker)    │    │  (FastAPI)   │                   │
-│  └──────────────┘    │              │◀──┐               │
+│  └──────────────┘    │             │◀──┐               │
 │                      │  - POST /    │   │               │
 │                      │    publish   │   │               │
 │                      │  - GET /     │   │               │
@@ -160,7 +160,7 @@ Response:
 pytest src/tests/test_comprehensive.py::test_concurrent_duplicate_processing -v
 ```
 
-## 📈 Performance
+## Performance
 
 ### Throughput Test
 ```
@@ -178,7 +178,7 @@ Indexes: topic, timestamp untuk fast queries
 Batch Size: Variable 5-50 events per POST
 ```
 
-## 📝 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -243,7 +243,7 @@ cd publisher && python -m publisher.main
 └── README.md
 ```
 
-## 📊 Monitoring
+## Monitoring
 
 ### Endpoints untuk Monitoring
 
