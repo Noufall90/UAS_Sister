@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Verification script untuk memastikan semua komponen ada dan bekerja.
-Jalankan sebelum submission.
-"""
-
 import os
 import sys
 import json

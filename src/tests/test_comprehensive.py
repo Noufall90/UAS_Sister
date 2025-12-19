@@ -1,8 +1,3 @@
-"""
-Comprehensive test suite untuk Pub-Sub Log Aggregator.
-Testing: idempotency, deduplication, transaksi, konkurensi, validasi, persistensi.
-"""
-
 import pytest
 import asyncio
 import json
@@ -21,11 +16,6 @@ from database import (
     get_events_by_topic, get_stats, get_topics, get_event_count,
     increment_stats, clear_all_data
 )
-
-
-# ============================================================================
-# FIXTURES
-# ============================================================================
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -86,11 +76,6 @@ def create_event(
         payload=payload
     )
 
-
-# ============================================================================
-# TEST 1-5: SCHEMA VALIDATION
-# ============================================================================
-
 @pytest.mark.asyncio
 async def test_valid_event_schema():
     """T1: Event dengan schema valid harus diterima"""
@@ -138,11 +123,6 @@ async def test_publish_request_batch_events():
     ]
     request = PublishRequest(events=events)
     assert len(request.get_events()) == 3
-
-
-# ============================================================================
-# TEST 6-10: IDEMPOTENCY & DEDUPLICATION
-# ============================================================================
 
 @pytest.mark.asyncio
 async def test_first_event_processed():
@@ -215,11 +195,6 @@ async def test_same_topic_different_event_ids():
     
     assert await is_processed(topic, "evt-1a") is True
     assert await is_processed(topic, "evt-1b") is True
-
-
-# ============================================================================
-# TEST 11-14: TRANSACTION & CONCURRENCY
-# ============================================================================
 
 @pytest.mark.asyncio
 async def test_concurrent_duplicate_processing():
@@ -294,11 +269,6 @@ async def test_serializable_isolation():
     events = await get_events_by_topic("test.isolation")
     assert len(events) == 5
 
-
-# ============================================================================
-# TEST 15-18: DATA PERSISTENCE & RECOVERY
-# ============================================================================
-
 @pytest.mark.asyncio
 async def test_events_persisted_to_database():
     """T15: Events harus tersimpan ke database"""
@@ -360,10 +330,6 @@ async def test_stats_persistence():
     assert stats["duplicate_dropped"] == 3
 
 
-# ============================================================================
-# TEST 19-22: QUERY & ANALYTICS
-# ============================================================================
-
 @pytest.mark.asyncio
 async def test_get_topics_list():
     """T19: get_topics harus return list unique topics"""
@@ -422,11 +388,6 @@ async def test_get_all_events_no_filter():
     
     all_events = await get_events_by_topic(None)
     assert len(all_events) == 6
-
-
-# ============================================================================
-# TEST 23-24: EDGE CASES & ERROR HANDLING
-# ============================================================================
 
 @pytest.mark.asyncio
 async def test_event_with_large_payload():

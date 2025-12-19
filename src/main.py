@@ -29,7 +29,6 @@ _queue: asyncio.Queue = None
 
 
 async def consumer_worker():
-    """Worker yang memproses event dari queue secara berurutan"""
     while True:
         try:
             event = await _queue.get()
@@ -61,7 +60,6 @@ async def consumer_worker():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifespan context manager untuk startup/shutdown"""
     global _startup_time, _consumer_task, _queue
     
     # Startup
@@ -135,13 +133,6 @@ async def health_check():
 
 @app.post("/publish", response_model=PublishResponse, tags=["Publishing"])
 async def publish_events(request: PublishRequest):
-    """
-    Publish event ke aggregator.
-    Menerima single event atau batch event.
-    Mengembalikan status accepted, rejected, dan error details.
-    
-    Idempotency: Event dengan (topic, event_id) yang sama hanya diproses sekali.
-    """
     events_to_publish = request.get_events()
     accepted = 0
     rejected = 0
@@ -194,10 +185,7 @@ async def publish_events(request: PublishRequest):
 
 @app.get("/events", response_model=List[EventResponse], tags=["Events"])
 async def get_events(topic: Optional[str] = Query(None, description="Filter by topic")):
-    """
-    Get semua unique events yang sudah diproses.
-    Optionally filter by topic.
-    """
+
     try:
         events = await get_events_by_topic(topic)
         return events
@@ -208,19 +196,11 @@ async def get_events(topic: Optional[str] = Query(None, description="Filter by t
 
 @app.post("/events", response_model=PublishResponse, tags=["Events"])
 async def post_events(request: PublishRequest):
-    """
-    POST to /events is redirected to /publish for convenience.
-    Publish event ke aggregator.
-    Menerima single event atau batch event.
-    """
     return await publish_events(request)
 
 
 @app.get("/stats", response_model=StatsResponse, tags=["Statistics"])
 async def get_aggregator_stats():
-    """
-    Get statistik aggregator: received, unique_processed, duplicate_dropped, topics, uptime.
-    """
     try:
         stats = await get_stats()
         topics = await get_topics()
@@ -249,10 +229,6 @@ async def get_aggregator_stats():
 
 @app.post("/admin/clear", tags=["Admin"])
 async def admin_clear_data():
-    """
-    Clear semua data (hanya untuk testing/development).
-    DANGER: menghapus semua events dan stats.
-    """
     try:
         from src.database import clear_all_data
         await clear_all_data()
@@ -264,7 +240,6 @@ async def admin_clear_data():
 
 @app.get("/info", tags=["Info"])
 async def get_info():
-    """Get informasi tentang aggregator"""
     uptime = time.time() - _startup_time
     event_count = await get_event_count()
     

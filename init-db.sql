@@ -1,6 +1,3 @@
--- Initialize aggregator database
--- This script runs automatically when PostgreSQL starts
-
 -- Create processed_events table
 CREATE TABLE IF NOT EXISTS processed_events (
     id BIGSERIAL PRIMARY KEY,
