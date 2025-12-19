@@ -155,46 +155,6 @@ Response:
 }
 ```
 
-## Testing
-
-### Test Coverage (24 tests)
-
-**Schema Validation (5 tests)**
-- Valid event schema
-- Empty payload handling
-- Missing required fields
-- Single event request
-- Batch events request
-
-**Idempotency & Dedup (5 tests)**
-- First event processing
-- Duplicate rejection
-- is_processed checks
-- Different event IDs
-- Same topic, different IDs
-
-**Transaction & Concurrency (4 tests)**
-- Concurrent duplicate processing (race condition safety)
-- Stats increment (no lost-update)
-- Mixed operations
-- SERIALIZABLE isolation
-
-**Persistence (4 tests)**
-- Events persisted to DB
-- Dedup store persistence across restarts
-- Sorted event retrieval
-- Stats persistence
-
-**Queries & Analytics (4 tests)**
-- Topics list
-- Event count
-- Filter by topic
-- Get all events
-
-**Edge Cases (2 tests)**
-- Large payloads
-- Special characters
-
 ### Run Specific Test
 ```bash
 pytest src/tests/test_comprehensive.py::test_concurrent_duplicate_processing -v
