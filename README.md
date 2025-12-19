@@ -273,7 +273,7 @@ GET /info
 
 ## 📹 Video Demo
 
-Link: [akan diupload ke YouTube]
+Link: https://youtu.be/2QVxdHnHN-c
 
 ---
 
