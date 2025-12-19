@@ -243,28 +243,6 @@ cd publisher && python -m publisher.main
 └── README.md
 ```
 
-## 🚨 Failure Handling
-
-### Scenarios Handled
-
-1. **Event Duplikasi**
-   - Publisher mengirim event yang sama multiple times
-   - Aggregator: accept semua, proses unique hanya sekali
-   - Database: UNIQUE constraint mencegah duplicate inserts
-
-2. **Container Crash**
-   - Event belum diproses → will be reprocessed after restart
-   - Event sudah diproses → dedup store mencegah reprocessing
-   - Data persisten via named volumes
-
-3. **Network Timeout**
-   - Publisher: retry dengan exponential backoff (implicit via asyncio)
-   - Aggregator: graceful degradation
-
-4. **Database Connection Loss**
-   - Connection pool: automatic reconnect
-   - Transactional: rollback on failure
-
 ## 📊 Monitoring
 
 ### Endpoints untuk Monitoring
