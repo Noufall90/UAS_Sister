@@ -8,9 +8,9 @@ Sistem log aggregator multi-service dengan Pub-Sub pattern yang mendukung idempo
 ┌─────────────────────────────────────────────────────────┐
 │              Docker Compose Network                     │
 │  ┌──────────────┐    ┌──────────────┐                   │
-│  │  Publisher   │──▶│ Aggregator   │                   │
+│  │  Publisher   │──▶ │ Aggregator   │                   │
 │  │  (Worker)    │    │  (FastAPI)   │                   │
-│  └──────────────┘    │              │◀──┐               │
+│  └──────────────┘    │              │◀─┐               │
 │                      │  - POST /    │   │               │
 │                      │    publish   │   │               │
 │                      │  - GET /     │   │               │
